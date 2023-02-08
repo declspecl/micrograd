@@ -1,35 +1,33 @@
 #include "micrograd.hpp"
 #include "Neuron.h"
-
-#include <stdio.h>
+#include "stdafx.h"
 
 using namespace micrograd;
 
 int main()
 {
-	Neuron neuron(3);
+	std::vector< Value<double> > inputs{ -1.0, 0.2, -0.4, 0.9, 0.1 };
 
-	std::vector< Value<double> > inputs{ 1.0, 2.0, 3.0 };
+	Neuron neuron(5);
 
-	neuron.weights = { 3.0, 2.0, 1.0 };
+	Value<double> act = neuron(inputs);
+	act.back_prop();
 
-	Value<double> activation = neuron.activate(inputs);
+	std::cout << act.to_string() << std::endl << std::endl;
 
-	std::cout << "neuron bias: " << std::endl;
-	std::cout << neuron.bias.toString() << std::endl << std::endl;
+	double learning_rate = 0.1;
 
-	std::cout << "neuron weights: " << std::endl;
-	for (int i = 0; i < neuron.weights.size(); i++)
-		std::cout << neuron.weights[i].toString() << std::endl;
-	
-	std::cout << std::endl << std::endl;
+	for (Value<double>*& param : act.parameters())
+		if (param->grad > 0.0)
+			param->data += learning_rate;
+		else
+			param->data -= learning_rate;
 
-	activation.backPropagate();
+	act = neuron(inputs);
+	act.zero_grad();
+	act.back_prop();
 
-	for (const auto& child : activation.parameters())
-	{
-		std::cout << child->toString() << std::endl << std::endl;
-	}
+	std::cout << act.to_string() << std::endl << std::endl;
 
 	return 0;
 }
