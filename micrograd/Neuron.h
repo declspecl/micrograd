@@ -1,6 +1,6 @@
 #pragma once
 
-#include "micrograd.hpp"
+#include "Value.hpp"
 
 #include <vector>
 #include <chrono>

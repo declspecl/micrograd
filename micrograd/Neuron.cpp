@@ -1,5 +1,6 @@
-#include "Neuron.h"
 #include "stdafx.h"
+
+#include "Neuron.h"
 
 Neuron::Neuron(unsigned numOfInputs) noexcept
 	: bias(0.0)
@@ -66,7 +67,7 @@ micrograd::Value<double> Neuron::activate(std::vector<micrograd::Value<double>>&
 
 	this->final_sum = this->intermediate_sums[this->intermediate_sums.size() - 1] + this->bias;
 
-	return this->final_sum;
+	return this->final_sum.tanh();
 }
 
 micrograd::Value<double> Neuron::operator()(std::vector<micrograd::Value<double>>& inputs) noexcept

@@ -1,8 +1,8 @@
 #include "stdafx.h"
+
 #include "Layer.h"
 
 Layer::Layer(unsigned numOfInputs, unsigned numOfOutputs) noexcept
-    : final_sum(0.0)
 {
     this->neurons.reserve(numOfOutputs);
     
@@ -10,26 +10,30 @@ Layer::Layer(unsigned numOfInputs, unsigned numOfOutputs) noexcept
         this->neurons.push_back(Neuron(numOfInputs));
 }
 
-micrograd::Value<double> Layer::activate(std::vector<micrograd::Value<double>>& inputs) noexcept
+std::vector< micrograd::Value<double>* > Layer::parameters()
 {
-    this->activations.clear();
-    this->activations.reserve(inputs.size() * 1.5);
+    std::vector< micrograd::Value<double>* > parameters;
+    parameters.reserve(this->neurons.size() * this->neurons[0].weights.size());
 
-    for (size_t i = 0; i < this->neurons.size(); i++)
-        this->activations.push_back(this->neurons[i](inputs));
+    for (Neuron& neuron : this->neurons)
+        for (micrograd::Value<double>* parameter : neuron.parameters())
+            parameters.push_back(parameter);
 
-    if (this->activations.size() % 2 != 0)
-        this->activations.push_back(micrograd::Value<double>(0.0));
-
-    const size_t before_size = this->activations.size();
-
-    for (size_t i = 0; i + 1 < before_size; i += 2)
-        this->activations.push_back(this->activations[i] + this->activations[i + 1]);
-
-    this->final_sum = this->activations[this->activations.size() - 1];
+    return parameters;
 }
 
-micrograd::Value<double> Layer::operator()(std::vector<micrograd::Value<double>>& inputs) noexcept
+std::vector< micrograd::Value<double> > Layer::activate(std::vector<micrograd::Value<double>>& inputs) noexcept
+{
+    std::vector< micrograd::Value<double> > activations;
+    activations.reserve(inputs.size());
+
+    for (Neuron& neuron : this->neurons)
+        activations.push_back(neuron.activate(inputs));
+
+    return activations;
+}
+
+std::vector< micrograd::Value<double> > Layer::operator()(std::vector<micrograd::Value<double>>& inputs) noexcept
 {
     return this->activate(inputs);
 }

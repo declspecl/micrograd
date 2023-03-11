@@ -1,17 +1,18 @@
 #pragma once
 
-#include "Neuron.h"
+#include "Layer.h"
 
 #include <vector>
 
-class Layer
+class MLP
 {
+private:
+	std::vector< std::vector< micrograd::Value<double> > > forward_passes;
+
 public:
-	std::vector<Neuron> neurons;
+	std::vector<Layer> layers;
 
-	Layer(unsigned numOfInputs, unsigned numOfOutputs) noexcept;
-
-	std::vector< micrograd::Value<double>* > parameters();
+	MLP(std::vector<unsigned> layerSizes) noexcept;
 
 	std::vector< micrograd::Value<double> > activate(std::vector< micrograd::Value<double> >& inputs) noexcept;
 	std::vector< micrograd::Value<double> > operator()(std::vector< micrograd::Value<double> >& inputs) noexcept;

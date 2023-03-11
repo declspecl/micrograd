@@ -1,5 +1,7 @@
 #pragma once
 
+#include "constants.h"
+
 #include <math.h>
 #include <string>
 #include <format>
@@ -11,12 +13,6 @@
 
 namespace micrograd
 {
-	namespace constants
-	{
-		constexpr double h = 0.0001;
-		constexpr double pi = 3.141592653589;
-	}
-
 	template <typename T>
 	class Value
 	{
@@ -129,7 +125,7 @@ namespace micrograd
 		other.grad = 0x00;
 		other.op = 0x00;
 		other.children = {};
-		
+
 		return *this;
 	}
 
